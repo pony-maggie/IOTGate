@@ -1,20 +1,13 @@
 package test.moniMaster;
 
-import java.net.Inet6Address;
-import java.net.UnknownHostException;
-import java.util.List;
-
-import gate.base.cache.ClientChannelCache;
 import gate.base.constant.ConstantValue;
 import gate.base.domain.ChannelData;
 import gate.base.domain.SocketData;
-import gate.util.CommonUtil;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+
+import java.util.List;
 /**
  * 解码器，模拟前置解码器
  * 
@@ -36,18 +29,19 @@ public class moniMasterDecoder  extends ByteToMessageDecoder{
 		
 
 	}
-	public ChannelData decodeGateHeader(ByteBuf in){
+	private ChannelData decodeGateHeader(ByteBuf in){
+		//这里应该多加一些判断，防止流量攻击
 		if(in.readableBytes()>31){
 			StringBuilder clientIpAddress ;
 			int beginReader;
 			
 			while (true) {
-				beginReader = in.readerIndex();
+				beginReader = in.readerIndex();//可以读的开始位置
 				int gateHeader = in.readByte() & 0xFF;
 				if(gateHeader == ConstantValue.GATE_HEAD_DATA){
-					int socketDataLen =  readLenArea(in);//in.readShortLE();//
+					int socketDataLen =  readLenArea(in);//in.readShortLE();//4字节长度
 					if(in.readableBytes() >= (socketDataLen+25) ){
-						in.readerIndex(beginReader);
+						in.readerIndex(beginReader);//带入参表示setter方法
 						SocketData data = new SocketData(in.readBytes(socketDataLen+30));
 						ChannelData channelData =  new ChannelData(data);
 						
@@ -74,7 +68,7 @@ public class moniMasterDecoder  extends ByteToMessageDecoder{
 	 * @param in byteBuf
 	 * @return
 	 */
-	public int readLenArea(ByteBuf in){
+	private int readLenArea(ByteBuf in){
 		int count = (in.readByte() & 0xFF) + ((in.readByte() & 0xFF) << 8 ) + ((in.readByte() & 0xFF) << 16  ) + ((in.readByte() & 0xFF) << 24 );
 		return count;
 	}

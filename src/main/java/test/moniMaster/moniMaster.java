@@ -1,14 +1,5 @@
 package test.moniMaster;
 
-import org.apache.curator.RetryPolicy;
-
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.imps.CuratorFrameworkState;
-import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.apache.zookeeper.CreateMode;
-
-import gate.util.MixAll;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -22,7 +13,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  * 模拟 模拟前置
  * 前置（规约解析服务）是翻译和编码报文的实际处理者
  * @author BriansPC
- *
+ * 该类模拟了master，其主要作用是开启8888端口，并将物理设备通过gate发送过来的上行报文原文发送回gate由gate转发给原物理设备！
  */
 public class moniMaster {
 	public static void main(String[] args) {
@@ -55,9 +46,12 @@ public class moniMaster {
 				try {
 					channelFuture = bootstrap.bind(8888).sync();
 					System.out.println("模拟前置已启动！！port = " +8888);
-					
+
+					//等待服务端监听端口关闭
+					//使用f.channel().closeFuture().sync()方法进行阻塞,等待服务端链路关闭之后main函数才退出。
 					channelFuture.channel().closeFuture().sync();
-					
+
+					//这里感觉放在finally会更好
 					boss.shutdownGracefully();
 					work.shutdownGracefully();
 				} catch (InterruptedException e) {
