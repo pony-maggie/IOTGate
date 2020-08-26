@@ -33,6 +33,8 @@ import io.netty.util.concurrent.DefaultEventExecutorGroup;
 
 /**
  * 网关与前置相连的客户端
+ * 网关对设备来说是server，但是网关需要连接前置master，对master来说它有是client
+ * 这个关系一定要理解
  * @Description: 
  * @author  yangcheng
  * @date:   2019年3月30日
@@ -69,7 +71,7 @@ public class Client2Master {
 		 * 设置ByteBuf的高低水位线，原方法WRITE_BUFFER_HIGH_WATER_MARK，WRITE_BUFFER_LOW_WATER_MARK已经被废弃
 		 * 由WRITE_BUFFER_WATER_MARK代替
 		 */
-		.option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(32 * 1024 * 1024, 64 * 1024 * 1024))//加上该配置后，网byteBuf写数据前需要判断iswriteble
+		.option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(32 * 1024 * 1024, 64 * 1024 * 1024))//加上该配置后，往byteBuf写数据前需要判断iswriteble
 		.option(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT)
 		.handler(new ChannelInitializer<SocketChannel>() {
 
@@ -116,7 +118,10 @@ public class Client2Master {
 		Channel channel  =  channelFuture.channel();
 		//获取网关本地地址
 		InetSocketAddress insocket = (InetSocketAddress)channel.remoteAddress();
+		System.out.println("insocket:" + insocket.toString());
 		String ipAddress = StringUtils.formatIpAddress(insocket.getHostName(), String.valueOf(insocket.getPort()));
+		//"localhost|8888"
+		System.out.println(ipAddress);
 		ByteBuf buf = loginGateHeader(ipAddress);
 		channelFuture.channel().writeAndFlush(buf);
 		

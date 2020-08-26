@@ -27,6 +27,7 @@ import io.netty.util.concurrent.DefaultEventExecutorGroup;
  * @Description: 
  * @author  yangcheng
  * @date:   2019年3月30日
+ * 这个是网关对终端的服务端处理
  */
 public class Server4Terminal {
 	/**
@@ -40,7 +41,7 @@ public class Server4Terminal {
 	
 	public Server4Terminal (String pId,String serverPort){
 		this.pId = pId;
-		this.serverPort = serverPort;
+		this.serverPort = serverPort;//网关服务端端口
 		this.boss = new NioEventLoopGroup(1);
 		this.work = new NioEventLoopGroup();
 		this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(
@@ -59,6 +60,14 @@ public class Server4Terminal {
 	
 	/**
 	 * 通过引导配置参数--长度域固定
+	 *
+	 * ChannelOption.ALLOCATOR
+	 * Netty参数，ByteBuf的分配器(重用缓冲区)，默认值为ByteBufAllocator.DEFAULT，4.0版本为UnpooledByteBufAllocator，4.1版本为PooledByteBufAllocator。该值也可以使用系统参数io.netty.allocator.type配置，使用字符串值：“unpooled”，“pooled”。
+	 * 额外解释， Netty4.1使用对象池，重用缓冲区(可以直接只用这个配置)
+	 * bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+	 * bootstrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+	 *
+	 *
 	 * @return
 	 */
 	public  ServerBootstrap config(int pId, boolean isBigEndian, int beginHexVal, int lengthFieldOffset, int lengthFieldLength,
@@ -66,7 +75,7 @@ public class Server4Terminal {
 		 ServerBootstrap serverBootstrap = new ServerBootstrap();
 		 serverBootstrap
 		 .group(boss, work)
-		 .channel(NioServerSocketChannel.class)
+		 .channel(NioServerSocketChannel.class)//SO_KEEPALIVE 保持连接检测对方主机是否崩溃，避免（服务器）永远阻塞于TCP连接的输入。设置该选项后，如果2小时内在此套接口的任一方向都没有数据交换，TCP就自动给对方发一个保持存活探测分节
 		 .option(ChannelOption.SO_KEEPALIVE, true)
 		 .option(ChannelOption.TCP_NODELAY, true)
 		 .option(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT)

@@ -16,6 +16,7 @@ import test.CountHelper;
 public class moniMasterHandler extends ChannelInboundHandlerAdapter {
 	/**
 	 * 当通道刚刚建立时会调用该方法
+	 * 网关的client连接到master时该方法触发
 	 */
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		System.out.println("通道初始化完成。。。。。。。。。");

@@ -52,7 +52,7 @@ public class TServer2MClient implements DataTransfer{
 								 * 2.发送数据前判断masterChannel是否可写，因为配置了高水位和低水位，有可能channel为“不可写”状态
 								 */
 								if(masterChannel != null  &&  masterChannel.isWritable()){
-									
+									//从server往master写??
 									masterChannel.writeAndFlush(channelData);
 									
 								}else{

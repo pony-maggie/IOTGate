@@ -11,7 +11,7 @@ import test.CountHelper;
 
 
 /**
- * 客户端处理服务端返回信息的处理器
+ * 客户端（终端设备）处理服务端返回信息的处理器
  * @author yangcheng
  * @date 2017年12月29日 
  * @version V1.0
@@ -31,6 +31,7 @@ public class moniTerminalHandler  extends SimpleChannelInboundHandler<ByteBuf>{
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
 		// TODO Auto-generated method stub
+
 		ByteBuf recieveMsg=(ByteBuf) msg;
 		String code = ByteBufUtil.hexDump(recieveMsg).toUpperCase();//将bytebuf中的可读字节 转换成16进制数字符串
 		

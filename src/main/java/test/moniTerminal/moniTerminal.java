@@ -29,7 +29,7 @@ public class moniTerminal {
 		bootstrap.group(work)
 		.channel(NioSocketChannel.class)
 		.option(ChannelOption.SO_KEEPALIVE, true)
-		.option(ChannelOption.SO_SNDBUF, 32*1024)
+		.option(ChannelOption.SO_SNDBUF, 32*1024) //每个TCP socket在内核中都有一个发送缓冲区和一个接收缓冲区
 		.option(ChannelOption.SO_RCVBUF, 32*1024)
 		
 		//这里方法名与服务端不一样，其他一致
@@ -73,10 +73,10 @@ public class moniTerminal {
 //					}
 					
 				}
-				channelFuture.channel().closeFuture().sync();
+				channelFuture.channel().closeFuture().sync();//阻塞
 				work.shutdownGracefully();
 	}
-	private static int port = 9811; 
+	private static int port = 9811; //这个要和服务端监听的端口一致
 	
 	public static void main(String[] args) throws InterruptedException {
 		/**
